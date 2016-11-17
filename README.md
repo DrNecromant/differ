@@ -9,8 +9,8 @@ Third endpoint returns diff.
 ## Requirements
 * Python language
 * virtualenv is applied
-* URI format for accepting data: <host>/v1/diff/<ID>/<left|right>
-* URI format for returning result: <host>/v1/diff/<ID>
+* URI format for accepting data: \<host>/v1/diff/\<ID>/\<left|right>
+* URI format for returning result: \<host>/v1/diff/\<ID>
 * Requests use only JSON format. Binary data should be base64 encoded.
 * Differences might be represented only as "equal", "different file size", offsets + length
 
