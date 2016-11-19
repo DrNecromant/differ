@@ -43,5 +43,5 @@ Third endpoint returns diff.
 ## Usage and examples
 * TBD
 
-# License
+## License
 Feel free to use my code on production environments and good luck. =)
