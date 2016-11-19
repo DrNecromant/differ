@@ -135,10 +135,8 @@ class TestEndpoints(unittest.TestCase):
 		pass
 
 if __name__ == "__main__":
-	SuiteDB = unittest.TestLoader().loadTestsFromTestCase(TestDB)
-	SuiteEndpoints = unittest.TestLoader().loadTestsFromTestCase(TestEndpoints)
-
-	for suite in (SuiteDB, SuiteEndpoints):
-		print "=" * 70
-		unittest.TextTestRunner(verbosity = 2).run(suite)
-		print
+	suites = list()
+	for test in (TestDB, TestEndpoints):
+		suites.append(unittest.TestLoader().loadTestsFromTestCase(test))
+	suite = unittest.TestSuite(suites)
+	results = unittest.TextTestRunner(verbosity = 2).run(suite)
