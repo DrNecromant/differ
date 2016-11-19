@@ -8,7 +8,7 @@ api = Api(app, catch_all_404s = True)
 
 # Temporarily storage for tasks in memory
 # Will be replace with sqlite DB soon
-tasks = dict(dict)
+tasks = dict()
 
 class Accepter(Resource):
 	"""
@@ -22,6 +22,7 @@ class Accepter(Resource):
 		"""
 		Fetch json data from body ignoring Content-Type header by force flag
 		If body is not json flask restfull api automatically handles that
+		Put fetched data to storage for further comparison
 		"""
 		json_data = request.get_json(force = True)
 		if not json_data.has_key("data"):
