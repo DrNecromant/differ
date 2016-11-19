@@ -13,6 +13,7 @@ Third endpoint returns diff.
 * URI format for returning result: \<host>/v1/diff/\<ID>
 * Requests use only JSON format. Binary data should be base64 encoded.
 * Differences might be represented only as "equal", "different file size", offsets + length
+* Tests
 
 ## Implementation details
 * Flask framework to process http requests
