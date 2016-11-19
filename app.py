@@ -38,9 +38,9 @@ db.create_all()
 
 class Accepter(Resource):
 	"""
-	Controller for receiving left and right files
+	Controller for receiving left and right data
 	Request should provide task ID
-	If task_id already exists then re-create file
+	If task_id already exists then re-create data
 	Example:
 		curl http://127.0.0.1:5000/v1/diff/123/left -X PUT -d '{"data": "foobar"}'
 	"""
@@ -69,33 +69,33 @@ class Accepter(Resource):
 
 class Result(Resource):
 	"""
-	Controller that returns result of file comparison
+	Controller that returns result of data comparison
 	Request should provide task ID
-	Returns error if file or files do not exist
+	Returns error if data does not exist
 	Example:
 		curl http://127.0.0.1:5000/v1/diff/123 -X GET
 	"""
 	def get(self, task_id):
 		"""
-		Method is looking for task ID on storage and takes corresponding files
-		After that method compares binary files and return result
-		- if files are equal, return that
-		- if files has different size, return that
-		- if files are differ but equal size, returns diff in the next format:
+		Method is looking for task ID on storage and takes corresponding data
+		After that method compares binary data and return result
+		- if data are equal, return that
+		- if data has different size, return that
+		- if data are differ but equal size, returns diff in the next format:
 		{"offset1": "length1", "offset2": "lenght2", ...}
 		"""
 		query = Data.query.filter_by(task_id = task_id)
-		files = query.all()
-		if not files:
+		data = query.all()
+		if not data:
 			return {
 				"message": "Task %s is not found on server" % task_id
 			}, status.HTTP_404_NOT_FOUND
-		if len(files) == 1:
-			side = files[0].side
+		if len(data) == 1:
+			side = data[0].side
 			return {
 				"message": "Only %s data is found on server" % side
 			}, status.HTTP_500_INTERNAL_SERVER_ERROR
-		if len(files) > 2:
+		if len(data) > 2:
 			return {
 				"message": "Too many data for one task %s" % task_id
 			}, status.HTTP_500_INTERNAL_SERVER_ERROR

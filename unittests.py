@@ -62,71 +62,71 @@ class TestEndpoints(unittest.TestCase):
 	def getTaskUrl(self):
 		return "%s/%s" % (BASEURL, self.task)
 
-	def getLeftFileUrl(self):
+	def getLeftDataUrl(self):
 		return self._getUrl(LEFT)
 
-	def getRightFileUrl(self):
+	def getRightDataUrl(self):
 		return self._getUrl(RIGHT)
 
-	def getFakeFileUrl(self):
+	def getFakeDataUrl(self):
 		return self._getUrl("fake")
 
-	def testNoFiles(self):
+	def testNoData(self):
 		"""
-		Try to get difference if there is no files for task
+		Try to get difference if there is no data for task
 		Returns 404 for task URL
 		"""
 		self.task = ids.pop()
 		res = self.client.get(self.getTaskUrl())
 		self.assertEquals(res.status_code, status.HTTP_404_NOT_FOUND)
 
-	def testAddEmptyFile(self):
+	def testAddEmptyData(self):
 		"""
 		Try to send json without "data" key
-		Returns 400 for file url
+		Returns 400 for data url
 		"""
 		self.task = ids.pop()
-		res = self.client.put(self.getLeftFileUrl(), data = '{}')
+		res = self.client.put(self.getLeftDataUrl(), data = '{}')
 		self.assertEquals(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-	def testAddFiles(self):
+	def testAddData(self):
 		"""
-		Try to add files to compare
-		Returns 201 for file urls
+		Try to add data to compare
+		Returns 201 for data urls
 		"""
 		self.task = ids.pop()
-		res = self.client.put(self.getLeftFileUrl(), data = '{"data": "filedata"}')
+		res = self.client.put(self.getLeftDataUrl(), data = '{"data": "data1"}')
 		self.assertEquals(res.status_code, status.HTTP_201_CREATED)
-		res = self.client.put(self.getRightFileUrl(), data = '{"data": "filedata"}')
+		res = self.client.put(self.getRightDataUrl(), data = '{"data": "data2"}')
 		self.assertEquals(res.status_code, status.HTTP_201_CREATED)
 
-	def testAddFakeFile(self):
+	def testAddFakeData(self):
 		"""
-		Try to add file different from left or right url
-		Returns 404 for fake file url
+		Try to add data by different url
+		Returns 404 for fake data url
 		"""
 		self.task = ids.pop()
-		res = self.client.put(self.getFakeFileUrl(), data = '{"data": "filedata"}')
+		res = self.client.put(self.getFakeDataUrl(), data = '{"data": "data"}')
 		self.assertEquals(res.status_code, status.HTTP_404_NOT_FOUND)
 
-	def testMissedFile(self):
+	def testMissedData(self):
 		"""
-		Try to run comparison task with one file only
+		Try to run comparison task with one data only
 		Returns 505 for task url
 		"""
 		self.task = ids.pop()
-		res = self.client.put(self.getRightFileUrl(), data = '{"data": "filedata"}')
+		res = self.client.put(self.getRightDataUrl(), data = '{"data": "data"}')
 		res = self.client.get(self.getTaskUrl())
 		self.assertEquals(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 	def testDiff(self):
 		"""
-		Try to diff existed files
+		Try to diff existed data
 		Returns 200 for task url
 		"""
 		self.task = ids.pop()
-		res = self.client.put(self.getLeftFileUrl(), data = '{"data": "filedata1"}')
-		res = self.client.put(self.getRightFileUrl(), data = '{"data": "filedata2"}')
+		res = self.client.put(self.getLeftDataUrl(), data = '{"data": "data1"}')
+		res = self.client.put(self.getRightDataUrl(), data = '{"data": "data2"}')
 		res = self.client.get(self.getTaskUrl())
 		self.assertEquals(res.status_code, status.HTTP_200_OK)
 		self.assertEquals(eval(res.get_data())["task_id"], self.task)
