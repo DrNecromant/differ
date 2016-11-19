@@ -17,6 +17,7 @@ Third endpoint returns diff.
 ## Implementation details
 * Flask framework to process http requests
 * SQLAlchemy and sqlite for storing data
+* json PUT request uses "data" key to provide requied encoded data
 
 ## Server deployment/cleanup
 

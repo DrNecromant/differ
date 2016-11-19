@@ -13,9 +13,13 @@ class Accepter(Resource):
 		curl http://127.0.0.1:5000/v1/diff/123/left -X PUT -d '{"data": "foobar"}'
 	"""
 	def put(self, task_id, side):
-		# fetch json data ignoring Content-Type header by force flag
+		"""
+		Fetch json data ignoring Content-Type header by force flag
+		If body is not json flask restfull api automatically handle that
+		"""
 		json_data = request.get_json(force = True)
-		#FIXME: check data key in json
+		if not json_data.has_key("data"):
+			return {"message": "Bad request. json 'data' key is requied."}, 400
 		data = json_data["data"]
 		return {
 			"task_id": "%s" % task_id,
