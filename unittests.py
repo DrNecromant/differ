@@ -25,7 +25,7 @@ class TestDB(unittest.TestCase):
 		"""
 		data = Data(task_id = ids.pop(), side = "left")
 		db.session.add(data)
-		data.data = "somedata"
+		data.sha = "somedata"
 		db.session.commit()
 
 	def testInvalidData(self):

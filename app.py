@@ -15,7 +15,7 @@ class Data(db.Model):
 	id = db.Column(db.Integer, primary_key = True)
 	task_id = db.Column(db.Integer)
 	side = db.Column(db.String(10))
-	data = db.Column(db.String(100), default = "")
+	sha = db.Column(db.String(100), default = "")
 
 	def __init__(self, task_id, side):
 		self.task_id = task_id
@@ -59,7 +59,7 @@ class Accepter(Resource):
 		if not data:
 			data = Data(task_id, side)
 			db.session.add(data)
-		data.data = json_data["data"]
+		data.sha = json_data["data"]
 		db.session.commit()
 		return {
 			"message": "Created",
@@ -99,8 +99,8 @@ class Result(Resource):
 			return {
 				"message": "Too many data for one task %s" % task_id
 			}, status.HTTP_500_INTERNAL_SERVER_ERROR
-		data_left = query.filter_by(side = LEFT).one().data
-		data_right = query.filter_by(side = RIGHT).one().data
+		sha_left = query.filter_by(side = LEFT).one().sha
+		sha_right = query.filter_by(side = RIGHT).one().sha
 		# Process data here
 		return {
 			"message": "OK",
