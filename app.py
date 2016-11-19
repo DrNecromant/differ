@@ -11,9 +11,6 @@ api = Api(app, catch_all_404s = True)
 # Will be replace with sqlite DB soon
 tasks = defaultdict(dict)
 
-#FIXME: change harcoded error codes with flask consts
-#FIXME: change harcoded "left", "right" with consts
-
 class Accepter(Resource):
 	"""
 	Controller for receiving left and right files
