@@ -1,8 +1,13 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
+from collections import defaultdict
 
 app = Flask("differ")
 api = Api(app, catch_all_404s = True)
+
+# Temporarily storage for tasks in memory
+# Will be replace with sqlite DB soon
+tasks = defaultdict(dict)
 
 class Accepter(Resource):
 	"""
@@ -20,12 +25,16 @@ class Accepter(Resource):
 		json_data = request.get_json(force = True)
 		if not json_data.has_key("data"):
 			return {"message": "Bad request. json 'data' key is requied."}, 400
-		data = json_data["data"]
+		if tasks[task_id].has_key(side):
+			message = "Replaced"
+		else:
+			message = "Created"
+		tasks[task_id][side] = json_data["data"]
 		return {
-			"task_id": "%s" % task_id,
-			"side": "%s" % side,
-			"data": "%s" % data
-		}
+			"message": message,
+			"task_id": task_id,
+			"side": side
+		}, 201
 
 class Result(Resource):
 	"""
