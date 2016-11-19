@@ -18,6 +18,23 @@ Third endpoint returns diff.
 * Flask framework to process http requests
 * SQLAlchemy and sqlite for storing data
 
+## Server deployment/cleanup
+### Install project
+pip install virtualenv
+git clone https://github.com/DrNecromant/differ
+virtualenv differ
+cd differ
+. bin/activate
+pip install -r requirements.txt
+### Start application
+python app.py
+### Stop application
+CTRL+C
+### Exit and remove project
+deactivate
+cd ..
+rm -r differ
+
 ## Usage and examples
 * TBD
 
