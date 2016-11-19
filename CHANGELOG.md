@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.2.0
+- Added unittests
+- Minor code style improvements
+
 ## v0.1.2
 - Process GET request body
 - Add flask and custom consts
