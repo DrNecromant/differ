@@ -14,8 +14,8 @@ class Accepter(Resource):
 	"""
 	def put(self, task_id, side):
 		"""
-		Fetch json data ignoring Content-Type header by force flag
-		If body is not json flask restfull api automatically handle that
+		Fetch json data from body ignoring Content-Type header by force flag
+		If body is not json flask restfull api automatically handles that
 		"""
 		json_data = request.get_json(force = True)
 		if not json_data.has_key("data"):
