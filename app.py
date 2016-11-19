@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_restful import Resource, Api
 
 app = Flask("differ")
-api = Api(app)
+api = Api(app, catch_all_404s = True)
 
 class Accepter(Resource):
 	"""
@@ -41,7 +41,7 @@ class Result(Resource):
 		}
 
 api.add_resource(Result, "/v1/diff/<int:task_id>")
-api.add_resource(Accepter, "/v1/diff/<int:task_id>/<string:side>")
+api.add_resource(Accepter, "/v1/diff/<int:task_id>/<any(right, left):side>")
 
 if __name__ == '__main__':
     app.run(debug = True)
