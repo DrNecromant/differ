@@ -1,14 +1,37 @@
 from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
 from flask_api import status
 from flask_restful import Resource, Api
 from consts import *
 
 app = Flask("differ")
 api = Api(app, catch_all_404s = True)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///production.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+db = SQLAlchemy(app)
 
-# Temporarily storage for tasks in memory
-# Will be replace with sqlite DB soon
-tasks = dict()
+class Data(db.Model):
+	id = db.Column(db.Integer, primary_key = True)
+	task_id = db.Column(db.Integer)
+	side = db.Column(db.String(10))
+	data = db.Column(db.String(100), default = "")
+
+	def __init__(self, task_id, side):
+		self.task_id = task_id
+		self.side = side
+
+class Diff(db.Model):
+	id = db.Column(db.Integer, primary_key = True)
+	task_id = db.Column(db.Integer)
+	offset = db.Column(db.Integer)
+	length = db.Column(db.Integer)
+
+	def __init__(self, task_id, offset, length):
+		self.task_id = task_id
+		self.offset = offset
+		self.length = length
+
+db.create_all()
 
 class Accepter(Resource):
 	"""
@@ -29,15 +52,14 @@ class Accepter(Resource):
 			return {
 				"message": "Bad request. json 'data' key is requied."
 			}, status.HTTP_400_BAD_REQUEST
-		if not tasks.has_key(task_id):
-			tasks[task_id] = {}
-		if tasks[task_id].has_key(side):
-			message = "Replaced"
-		else:
-			message = "Created"
-		tasks[task_id][side] = json_data["data"]
+		data = Data.query.filter_by(task_id = task_id, side = side).first()
+		if not data:
+			data = Data(task_id, side)
+			db.session.add(data)
+		data.data = json_data["data"]
+		db.session.commit()
 		return {
-			"message": message,
+			"message": "Created",
 			"task_id": task_id,
 			"side": side
 		}, status.HTTP_201_CREATED
@@ -59,19 +81,23 @@ class Result(Resource):
 		- if files are differ but equal size, returns diff in the next format:
 		{"offset1": "length1", "offset2": "lenght2", ...}
 		"""
-		error_message = "Requied task_id are missed on server"
-		if not tasks.has_key(task_id):
+		query = Data.query.filter_by(task_id = task_id)
+		files = query.all()
+		if not files:
 			return {
 				"message": "Task %s is not found on server" % task_id
 			}, status.HTTP_404_NOT_FOUND
-		task = tasks[task_id]
-		for side in (LEFT, RIGHT):
-			if not task.has_key(side):
-				return {
-					"message": "Resource %s is not found on server" % side
-				}, status.HTTP_500_INTERNAL_SERVER_ERROR
-		data_left = task[LEFT]
-		data_right = task[RIGHT]
+		if len(files) == 1:
+			side = files[0].side
+			return {
+				"message": "Only %s data is found on server" % side
+			}, status.HTTP_500_INTERNAL_SERVER_ERROR
+		if len(files) > 2:
+			return {
+				"message": "Too many data for one task %s" % task_id
+			}, status.HTTP_500_INTERNAL_SERVER_ERROR
+		data_left = query.filter_by(side = LEFT).one().data
+		data_right = query.filter_by(side = RIGHT).one().data
 		# Process data here
 		return {
 			"message": "OK",
