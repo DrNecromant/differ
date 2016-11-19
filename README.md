@@ -19,21 +19,25 @@ Third endpoint returns diff.
 * SQLAlchemy and sqlite for storing data
 
 ## Server deployment/cleanup
+
 ### Install project
-pip install virtualenv
-git clone https://github.com/DrNecromant/differ
-virtualenv differ
-cd differ
-. bin/activate
-pip install -r requirements.txt
+* pip install virtualenv
+* git clone https://github.com/DrNecromant/differ
+* virtualenv differ
+* cd differ
+* . bin/activate
+* pip install -r requirements.txt
+
 ### Start application
-python app.py
+* python app.py
+
 ### Stop application
-CTRL+C
+* CTRL+C
+
 ### Exit and remove project
-deactivate
-cd ..
-rm -r differ
+* deactivate
+* cd ..
+* rm -r differ
 
 ## Usage and examples
 * TBD
