@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_api import status
 from flask_restful import Resource, Api
 from consts import *
+from errors import *
 
 app = Flask("differ")
 api = Api(app, catch_all_404s = True)
@@ -19,6 +20,8 @@ class Data(db.Model):
 	def __init__(self, task_id, side):
 		self.task_id = task_id
 		self.side = side
+		if side not in (LEFT, RIGHT):
+			raise InvalidValue("Invalid side column value: %s" % side)
 
 class Diff(db.Model):
 	id = db.Column(db.Integer, primary_key = True)

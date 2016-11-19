@@ -3,6 +3,7 @@ import unittest
 from app import app, db, Data, Diff
 from flask_api import status
 from consts import *
+from errors import *
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
@@ -26,6 +27,16 @@ class TestDB(unittest.TestCase):
 		db.session.add(data)
 		data.data = "somedata"
 		db.session.commit()
+
+	def testInvalidData(self):
+		"""
+		Try to create record in a table Data
+		"""
+		try:
+			data = Data(task_id = ids.pop(), side = "fake")
+		except InvalidValue:
+			return
+		raise Exception("fake value is not acceptable for side column")
 
 	def testDiff(self):
 		"""
