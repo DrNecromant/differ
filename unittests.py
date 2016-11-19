@@ -4,7 +4,7 @@ from app import app
 from flask_api import status
 from consts import *
 
-class TestDiffer(unittest.TestCase):
+class TestEndpoints(unittest.TestCase):
 	"""
 	Unittests for differ
 	"""
@@ -90,5 +90,5 @@ class TestDiffer(unittest.TestCase):
 		pass
 
 if __name__ == "__main__":
-	suite = unittest.TestLoader().loadTestsFromTestCase(TestDiffer)
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestEndpoints)
 	unittest.TextTestRunner(verbosity = 2).run(suite)
