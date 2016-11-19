@@ -27,6 +27,8 @@ class Accepter(Resource):
 		json_data = request.get_json(force = True)
 		if not json_data.has_key("data"):
 			return {"message": "Bad request. json 'data' key is requied."}, status.HTTP_400_BAD_REQUEST
+		if not tasks.has_key(task_id):
+			tasks[task_id] = {}
 		if tasks[task_id].has_key(side):
 			message = "Replaced"
 		else:
@@ -59,21 +61,21 @@ class Result(Resource):
 		if not tasks.has_key(task_id):
 			return {
 				"message": "Task %s is not found on server" % task_id
-			}, HTTP_404_NOT_FOUND
+			}, status.HTTP_404_NOT_FOUND
 		task = tasks[task_id]
 		for side in (LEFT, RIGHT):
-			if not task.has_key():
+			if not task.has_key(side):
 				return {
 					"message": "Resource %s is not found on server" % side
-				}, HTTP_500_INTERNAL_SERVER_ERROR
+				}, status.HTTP_500_INTERNAL_SERVER_ERROR
 		data_left = task[LEFT]
 		data_right = task[RIGHT]
 		# Process data here
 		return {
 			"message": "OK",
-			"task_id": task_id
+			"task_id": task_id,
 			"diff": "TBD"
-		}, stauts.HTTP_200_OK
+		}, status.HTTP_200_OK
 
 api.add_resource(Result, "/v1/diff/<int:task_id>")
 api.add_resource(Accepter, "/v1/diff/<int:task_id>/<any(%s, %s):side>" % (LEFT, RIGHT))
