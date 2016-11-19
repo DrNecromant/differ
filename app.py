@@ -1,5 +1,5 @@
 from flask import Flask, request
-from flask.ext.api import status
+from flask_api import status
 from flask_restful import Resource, Api
 from consts import *
 
@@ -26,7 +26,9 @@ class Accepter(Resource):
 		"""
 		json_data = request.get_json(force = True)
 		if not json_data.has_key("data"):
-			return {"message": "Bad request. json 'data' key is requied."}, status.HTTP_400_BAD_REQUEST
+			return {
+				"message": "Bad request. json 'data' key is requied."
+			}, status.HTTP_400_BAD_REQUEST
 		if not tasks.has_key(task_id):
 			tasks[task_id] = {}
 		if tasks[task_id].has_key(side):
