@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api
 
 app = Flask("differ")
@@ -9,9 +9,14 @@ class Accepter(Resource):
 	# Request should provide task ID
 	# If task_id already exists then re-create file
 	def put(self, task_id, side):
+		# fetch json data ignoring Content-Type header by force flag
+		json_data = request.get_json(force = True)
+		#FIXME: check data key in json
+		data = json_data["data"]
 		return {
 			"task_id": "%s" % task_id,
-			"side": "%s" % side
+			"side": "%s" % side,
+			"data": "%s" % data
 		}
 
 class Result(Resource):
