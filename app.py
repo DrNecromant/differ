@@ -26,8 +26,8 @@ class Accepter(Resource):
 class Result(Resource):
 	"""
 	Controller that returns result of file comparison
-    Request should provide task ID
-    Returns error if file or files do not exist
+	Request should provide task ID
+	Returns error if file or files do not exist
 	Example:
 		curl http://127.0.0.1:5000/v1/diff/123 -X GET
 	"""
