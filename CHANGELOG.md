@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.0.1
+- Join test suites in one big suite
+
 ## v1.0.0
 - Added sqlite support to store tasks and diffs
 - Added unttests for DB
