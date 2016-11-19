@@ -2,14 +2,13 @@ from flask import Flask, request
 from flask.ext.api import status
 from flask_restful import Resource, Api
 from consts import *
-from collections import defaultdict
 
 app = Flask("differ")
 api = Api(app, catch_all_404s = True)
 
 # Temporarily storage for tasks in memory
 # Will be replace with sqlite DB soon
-tasks = defaultdict(dict)
+tasks = dict(dict)
 
 class Accepter(Resource):
 	"""
@@ -47,8 +46,27 @@ class Result(Resource):
 		curl http://127.0.0.1:5000/v1/diff/123 -X GET
 	"""
 	def get(self, task_id):
-		data_left = tasks[task_id][LEFT]
-		data_right = tasks[task_id][RIGHT]
+		"""
+		Method is looking for task ID on storage and takes corresponding files
+		After that method compares binary files and return result
+		- if files are equal, return that
+		- if files has different size, return that
+		- if files are differ but equal size, returns diff in the next format:
+		{"offset1": "length1", "offset2": "lenght2", ...}
+		"""
+		error_message = "Requied task_id are missed on server"
+		if not tasks.has_key(task_id):
+			return {
+				"message": "Task %s is not found on server" % task_id
+			}, HTTP_404_NOT_FOUND
+		task = tasks[task_id]
+		for side in (LEFT, RIGHT):
+			if not task.has_key():
+				return {
+					"message": "Resource %s is not found on server" % side
+				}, HTTP_500_INTERNAL_SERVER_ERROR
+		data_left = task[LEFT]
+		data_right = task[RIGHT]
 		# Process data here
 		return {
 			"message": "OK",
