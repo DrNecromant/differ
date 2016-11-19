@@ -79,8 +79,8 @@ class Result(Resource):
 			"diff": "TBD"
 		}, status.HTTP_200_OK
 
-api.add_resource(Result, "/v1/diff/<int:task_id>")
-api.add_resource(Accepter, "/v1/diff/<int:task_id>/<any(%s, %s):side>" % (LEFT, RIGHT))
+api.add_resource(Result, "%s/<int:task_id>" % BASEURL)
+api.add_resource(Accepter, "%s/<int:task_id>/<any(%s, %s):side>" % (BASEURL, LEFT, RIGHT))
 
 if __name__ == '__main__':
     app.run(debug = True)
