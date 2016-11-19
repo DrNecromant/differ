@@ -1,5 +1,11 @@
 # Change Log
 
+## v3.0.0
+- Added sqlite support to store tasks and diffs
+- Added unttests for DB
+- Added SQLlite and its dependences
+- Some cosmetic changes
+
 ## v0.2.0
 - Added unittests
 - Minor code style improvements
