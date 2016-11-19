@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask.ext.api import status
 from flask_restful import Resource, Api
+from consts import *
 from collections import defaultdict
 
 app = Flask("differ")
@@ -49,8 +50,8 @@ class Result(Resource):
 		curl http://127.0.0.1:5000/v1/diff/123 -X GET
 	"""
 	def get(self, task_id):
-		data_left = tasks[task_id]["left"]
-		data_right = tasks[task_id]["right"]
+		data_left = tasks[task_id][LEFT]
+		data_right = tasks[task_id][RIGHT]
 		# Process data here
 		return {
 			"message": "OK",
@@ -59,7 +60,7 @@ class Result(Resource):
 		}, stauts.HTTP_200_OK
 
 api.add_resource(Result, "/v1/diff/<int:task_id>")
-api.add_resource(Accepter, "/v1/diff/<int:task_id>/<any(right, left):side>")
+api.add_resource(Accepter, "/v1/diff/<int:task_id>/<any(%s, %s):side>" % (LEFT, RIGHT))
 
 if __name__ == '__main__':
     app.run(debug = True)
