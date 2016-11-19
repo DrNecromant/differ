@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask.ext.api import status
 from flask_restful import Resource, Api
 from collections import defaultdict
 
@@ -27,7 +28,7 @@ class Accepter(Resource):
 		"""
 		json_data = request.get_json(force = True)
 		if not json_data.has_key("data"):
-			return {"message": "Bad request. json 'data' key is requied."}, 400
+			return {"message": "Bad request. json 'data' key is requied."}, status.HTTP_400_BAD_REQUEST
 		if tasks[task_id].has_key(side):
 			message = "Replaced"
 		else:
@@ -37,7 +38,7 @@ class Accepter(Resource):
 			"message": message,
 			"task_id": task_id,
 			"side": side
-		}, 201
+		}, status.HTTP_201_CREATED
 
 class Result(Resource):
 	"""
@@ -55,7 +56,7 @@ class Result(Resource):
 			"message": "OK",
 			"task_id": task_id
 			"diff": "TBD"
-		}, 200
+		}, stauts.HTTP_200_OK
 
 api.add_resource(Result, "/v1/diff/<int:task_id>")
 api.add_resource(Accepter, "/v1/diff/<int:task_id>/<any(right, left):side>")
