@@ -9,6 +9,9 @@ api = Api(app, catch_all_404s = True)
 # Will be replace with sqlite DB soon
 tasks = defaultdict(dict)
 
+#FIXME: change harcoded error codes with flask consts
+#FIXME: change harcoded "left", "right" with consts
+
 class Accepter(Resource):
 	"""
 	Controller for receiving left and right files
@@ -45,9 +48,14 @@ class Result(Resource):
 		curl http://127.0.0.1:5000/v1/diff/123 -X GET
 	"""
 	def get(self, task_id):
+		data_left = tasks[task_id]["left"]
+		data_right = tasks[task_id]["right"]
+		# Process data here
 		return {
-			"task_id": "%s" % task_id
-		}
+			"message": "OK",
+			"task_id": task_id
+			"diff": "TBD"
+		}, 200
 
 api.add_resource(Result, "/v1/diff/<int:task_id>")
 api.add_resource(Accepter, "/v1/diff/<int:task_id>/<any(right, left):side>")
