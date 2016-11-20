@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.2.1
+- Added new method saveOnDisk for Record class
+- Added unittests for method saveOnDisk
+
 ## v1.1.1
 - Added new class Record that represent convertanble object
 - Added unittests for Record object
