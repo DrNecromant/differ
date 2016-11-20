@@ -48,6 +48,18 @@ class TestRecord(unittest.TestCase):
 		sha = r.getSha()
 		self.assertEquals(sha, self.sha)
 
+	def testSaveDataOnDisk(self):
+		"""
+		Store data to disk
+		Check path and sha
+		"""
+		r = Record(storage = self.storage, data = self.data)
+		r.saveOnDisk()
+		sha = r.getSha()
+		path = r.getPath()
+		self.assertEquals(sha, self.sha)
+		self.assertEquals(path, self.path)
+
 class TestDB(unittest.TestCase):
 	"""
 	Unittests for db
