@@ -1,7 +1,11 @@
+import os
 import unittest
+import base64
+import hashlib
 
-from app import app, db, Data, Diff
+from app import app, db, Data, Diff, Record
 from flask_api import status
+
 from consts import *
 from errors import *
 
@@ -11,6 +15,38 @@ db.create_all()
 
 # Create pool of IDs for testing
 ids = range(1, 100)
+
+class TestRecord(unittest.TestCase):
+	"""
+	Unittest for Record object.
+	Testing convering here
+	Record object can accept data or sha
+	"""
+	def setUp(self):
+		self.storage = "test_data"
+		self.path = "test_data/66/cb/ca/66cbca2264581ba7223adf85b3840a6ef662968bae56acfc91d31961029e3c04"
+		self.data = open("test_data/Clare.jpg_data").read()
+		self.sha = "66cbca2264581ba7223adf85b3840a6ef662968bae56acfc91d31961029e3c04"
+
+	def testConvertShaToPath(self):
+		r = Record(storage = self.storage, sha = self.sha)
+		path = r.getPath()
+		self.assertEquals(path, self.path)
+
+	def testConvertDataToPath(self):
+		r = Record(storage = self.storage, data = self.data)
+		path = r.getPath()
+		self.assertEquals(path, self.path)
+
+	def testConvertShaToData(self):
+		r = Record(storage = self.storage, sha = self.sha)
+		data = r.getData()
+		self.assertEquals(data, self.data)
+
+	def testConvertDataToSha(self):
+		r = Record(storage = self.storage, data = self.data)
+		sha = r.getSha()
+		self.assertEquals(sha, self.sha)
 
 class TestDB(unittest.TestCase):
 	"""
@@ -136,7 +172,7 @@ class TestEndpoints(unittest.TestCase):
 
 if __name__ == "__main__":
 	suites = list()
-	for test in (TestDB, TestEndpoints):
+	for test in (TestRecord, TestDB, TestEndpoints):
 		suites.append(unittest.TestLoader().loadTestsFromTestCase(test))
 	suite = unittest.TestSuite(suites)
 	results = unittest.TextTestRunner(verbosity = 2).run(suite)
