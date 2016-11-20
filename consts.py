@@ -9,9 +9,9 @@ class Config(object):
 	SQLALCHEMY_TRACK_MODIFICATIONS = True
 	RECORD_STORAGE_PATH = "storage"
 
-class TestingConfig(Config):
+class TestingConfig(object):
 	TESTING = True
 	DEBUG = True
-	DATABASE_URI = 'sqlite://:memory:'
+	DATABASE_URI = 'sqlite:///:memory:'
 	SQLALCHEMY_TRACK_MODIFICATIONS = True
 	RECORD_STORAGE_PATH = "test_data"

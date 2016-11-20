@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.3.2
+- Fixed app configuration that allows to run unittests on production
+
 ## v1.3.1
 - Extended PUT request that works with real data now
 - Extended unittest for PUT request
