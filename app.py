@@ -186,6 +186,22 @@ class Result(Resource):
 		- if data are differ but equal size, returns diff in the next format:
 		{"offset1": "length1", "offset2": "lenght2", ...}
 		"""
+		db_diffs = Diff.query.filter_by(task_id = task_id).all()
+		if db_diffs:
+			# Return cached diff from DB
+			binary_diff = {}
+			for db_diff in db_diffs:
+				binary_diff[db_diff.offset] = db_diff.lenght
+			return {
+				"message": "OK",
+				"task_id": task_id,
+				"diff": {
+					"equal_content": "false",
+					"equal_size": "true",
+					"binary_diff": binary_diff
+				}
+			}, status.HTTP_200_OK
+
 		query = Data.query.filter_by(task_id = task_id)
 		data = query.all()
 		if not data:
@@ -206,6 +222,10 @@ class Result(Resource):
 		sha_right = query.filter_by(side = RIGHT).one().sha
 		record_right = Record(sha = sha_right)
 		diff = getDiff(record_left.getPath(), record_right.getPath())
+		# Add diff to DB as cache
+		for offset, length in diff["binary_diff"].items():
+			db.session.add(Diff(task_id, offset, length))
+		db.session.commit()
 		return {
 			"message": "OK",
 			"task_id": task_id,
