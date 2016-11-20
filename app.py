@@ -119,6 +119,15 @@ class Record(object):
 		with open(self.path, "wb") as f:
 			f.write(base64.b64decode(self.data))
 
+	def removeFromDisk(self):
+		"""
+		On record replacement new file will be stored on another location
+		This method is needed to remove old useless files
+		"""
+		self.path = self.getPath()
+		if os.path.exists(self.path):
+			os.unlink(self.path)
+
 class Accepter(Resource):
 	"""
 	Controller for receiving left and right data
@@ -146,8 +155,7 @@ class Accepter(Resource):
 		else:
 			# If data exists then remove old file on disk first
 			old_record = Record(sha = data.sha)
-			old_path = old_record.getPath()
-			os.unlink(old_path)
+			old_record.RemoveFromDisk()
 		record = Record(data = json_data["data"])
 		# Store decoded file on a disk
 		record.saveOnDisk()
