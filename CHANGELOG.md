@@ -1,5 +1,10 @@
 # Change Log
 
+## v1.4.0
+- GET request now process difference
+- Unittest for getDiff
+- major bug fixes
+
 ## v1.3.3
 - Add removeFromDisk for Record
 - Add unittests for removeFromDisk
