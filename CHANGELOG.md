@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.5.1
+- Added usage and examples in README file
+
 ## v1.5.0
 - Added integration test
 - Fixed a lot of bugs found by integration test
