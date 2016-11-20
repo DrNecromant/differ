@@ -47,7 +47,61 @@ Third endpoint returns diff.
 * rm -r differ
 
 ## Usage and examples
-* TBD
+
+### Run unit tests
+```
+$ python unittests
+testDiff (__main__.TestFilesDiff) ... ok
+testNoDiff (__main__.TestFilesDiff) ... ok
+testSizeDiff (__main__.TestFilesDiff) ... ok
+testConvertDataToPath (__main__.TestRecord) ... ok
+testConvertDataToSha (__main__.TestRecord) ... ok
+testConvertShaToData (__main__.TestRecord) ... ok
+testConvertShaToPath (__main__.TestRecord) ... ok
+testRemoveFileFromDisk (__main__.TestRecord) ... ok
+testSaveDataOnDisk (__main__.TestRecord) ... ok
+testData (__main__.TestDB) ... ok
+testDiff (__main__.TestDB) ... ok
+testInvalidData (__main__.TestDB) ... ok
+testAddData (__main__.TestEndpoints) ... ok
+testAddEmptyData (__main__.TestEndpoints) ... ok
+testAddFakeData (__main__.TestEndpoints) ... ok
+testDiff (__main__.TestEndpoints) ... ok
+testMissedData (__main__.TestEndpoints) ... ok
+testNoData (__main__.TestEndpoints) ... ok
+
+Ran 18 tests in 0.059s
+OK
+```
+
+### Run integration test
+```
+$ python integrationtests.py
+Ran 1 test in 0.030s
+OK
+```
+
+### Run manul tests
+All test data might be found in test_data directory
+```
+$ curl http://127.0.0.1:5000/v1/diff/99/left -X PUT -d '{"data": "<encoded base64 data>"}'
+$ curl http://127.0.0.1:5000/v1/diff/99/right -X PUT -d '{"data": "<encoded base64 data>"}'
+
+$ curl http://127.0.0.1:5000/v1/diff/99 -X GET
+{
+    "diff": {
+        "binary_diff": {
+            "50": 3, 
+            "989": 2, 
+            "1222": 10
+        }, 
+        "equal_content": "false", 
+        "equal_size": "true"
+    }, 
+    "message": "OK", 
+    "task_id": 99
+}
+```
 
 ## TODO
 * Add logging for application and tests
