@@ -96,9 +96,6 @@ class TestDB(unittest.TestCase):
 	"""
 	Unittests for db
 	"""
-	def setUp(self):
-		pass
-
 	def testData(self):
 		"""
 		Try to create record in a table Data
@@ -125,9 +122,6 @@ class TestDB(unittest.TestCase):
 		diff = Diff(task_id = ids.pop(), offset = 10, length = 30)
 		db.session.add(diff)
 		db.session.commit()
-
-	def tearDown(self):
-		pass
 
 class TestEndpoints(unittest.TestCase):
 	"""
@@ -211,9 +205,6 @@ class TestEndpoints(unittest.TestCase):
 		res = self.client.get(self.getTaskUrl())
 		self.assertEquals(res.status_code, status.HTTP_200_OK)
 		self.assertEquals(eval(res.get_data())["task_id"], self.task)
-
-	def tearDown(self):
-		pass
 
 if __name__ == "__main__":
 	suites = list()
