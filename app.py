@@ -201,13 +201,18 @@ class Result(Resource):
 				"message": "Too many data for one task %s" % task_id
 			}, status.HTTP_500_INTERNAL_SERVER_ERROR
 		sha_left = query.filter_by(side = LEFT).one().sha
+		record_left = Record(sha = sha_left)
 		sha_right = query.filter_by(side = RIGHT).one().sha
-		# Process data here
+		record_right = Record(sha = sha_right)
+		diff = getDiff(record_left.path, record_right.path)
 		return {
 			"message": "OK",
 			"task_id": task_id,
-			"diff": "TBD"
+			"diff": diff
 		}, status.HTTP_200_OK
+
+def getDiff(file1, file2):
+	return "OK"
 
 api.add_resource(Result, "%s/<int:task_id>" % BASEURL)
 api.add_resource(Accepter, "%s/<int:task_id>/<any(%s, %s):side>" % (BASEURL, LEFT, RIGHT))
