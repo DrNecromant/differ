@@ -11,9 +11,12 @@ from consts import *
 from errors import *
 
 app = Flask("differ")
+# Load config for app
+if __name__ == '__main__':
+	app.config.from_object('consts.ProductionConfig')
+else:
+	app.config.from_object('consts.TestingConfig')
 api = Api(app, catch_all_404s = True)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///production.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db = SQLAlchemy(app)
 
 class Data(db.Model):
@@ -47,7 +50,8 @@ class Record(object):
 	It has base64 encoded data, sha and fs path params
 	Record is stored as sha in DB and as file on fs
 	"""
-	def __init__(self, storage = STORAGE, data = "", sha = ""):
+	def __init__(self, storage = app.config["RECORD_STORAGE_PATH"], \
+				data = "", sha = ""):
 		if not data and not sha:
 			raise EmptyRecord("Empty data is not permitted for storing")
 		if not os.path.exists(storage):
@@ -136,9 +140,19 @@ class Accepter(Resource):
 			}, status.HTTP_400_BAD_REQUEST
 		data = Data.query.filter_by(task_id = task_id, side = side).first()
 		if not data:
+			# If data does not exist then create new one
 			data = Data(task_id, side)
 			db.session.add(data)
-		data.sha = json_data["data"]
+		else:
+			# If data exists then remove old file on disk first
+			old_record = Record(sha = data.sha)
+			old_path = old_record.getPath()
+			os.unlink(old_path)
+		record = Record(data = json_data["data"])
+		# Store decoded file on a disk
+		record.saveOnDisk()
+		# Store file sha in DB
+		data.sha = record.getSha()
 		db.session.commit()
 		return {
 			"message": "Created",
@@ -191,4 +205,4 @@ api.add_resource(Result, "%s/<int:task_id>" % BASEURL)
 api.add_resource(Accepter, "%s/<int:task_id>/<any(%s, %s):side>" % (BASEURL, LEFT, RIGHT))
 
 if __name__ == '__main__':
-    app.run(debug = True)
+	app.run(debug = True)
