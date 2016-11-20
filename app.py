@@ -72,9 +72,6 @@ class Record(object):
 			return self.data
 		if not self.path:
 			self.path = self._getPathFromSha()
-			#dirname = os.dirname(self.path)
-			#if not os.path.exists(dirname):
-			#	os.makedirs(dirname)
 		with open(self.path, "rb") as f:
 			self.data = base64.b64encode(f.read())
 		return self.data
@@ -84,7 +81,7 @@ class Record(object):
 		Return filepath for record
 		"""
 		if self.path:
-			return path
+			return self.path
 		if self.sha:
 			return self._getPathFromSha()
 		h = hashlib.new("sha256")
@@ -105,6 +102,18 @@ class Record(object):
 		h.update(base64.b64decode(self.data))
 		self.sha = h.hexdigest()
 		return self.sha
+
+	def saveOnDisk(self):
+		"""
+		Store record on fs
+		"""
+		self.path = self.getPath()
+		self.data = self.getData()
+		dirname = os.path.dirname(self.path)
+		if not os.path.exists(dirname):
+			os.makedirs(dirname)
+		with open(self.path, "wb") as f:
+			f.write(base64.b64decode(self.data))
 
 class Accepter(Resource):
 	"""
