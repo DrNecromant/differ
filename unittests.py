@@ -64,6 +64,17 @@ class TestRecord(unittest.TestCase):
 		self.assertEquals(sha, self.td.sha1)
 		self.assertEquals(path, self.td.path1)
 
+	def testRemoveFileFromDisk(self):
+		"""
+		Check record can remove file from disk
+		"""
+		r = Record(data = "fake")
+		r.path = "test_data/fake"
+		with open(r.path, 'w') as f:
+			f.write("fake")
+		r.removeFromDisk()
+		self.assertFalse(os.path.exists(r.path))
+
 class TestDB(unittest.TestCase):
 	"""
 	Unittests for db
