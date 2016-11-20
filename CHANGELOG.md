@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.5.0
+- Added integration test
+- Fixed a lot of bugs found by integration test
+
 ## v1.4.1
 - Use DB Diff as cache in GET requests
 
