@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.5.2
+- Added missed storage test data
+
 ## v1.5.1
 - Added usage and examples in README file
 
