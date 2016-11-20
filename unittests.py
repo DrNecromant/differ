@@ -3,7 +3,7 @@ import unittest
 import base64
 import hashlib
 
-from app import app, db, Data, Diff, Record
+from app import app, db, Data, Diff, Record, getDiff
 from flask_api import status
 
 from consts import *
@@ -16,12 +16,44 @@ ids = range(1, 100)
 
 # Create testdata
 class TestData(object):
-	path1 = "test_data/66/cb/ca/66cbca2264581ba7223adf85b3840a6ef662968bae56acfc91d31961029e3c04"
-	data1 = open("test_data/Clare.jpg_data").read()
-	sha1 = "66cbca2264581ba7223adf85b3840a6ef662968bae56acfc91d31961029e3c04"
-	path2 = "test_data/a4/aa/17/a4aa17e3ba5d2849461a17559b0bae6f1f00a8ccab1a7f17d7f73225f9086fec"
-	data2 = open("test_data/Clare_modified.jpg_data").read()
-	sha2 = "a4aa17e3ba5d2849461a17559b0bae6f1f00a8ccab1a7f17d7f73225f9086fec"
+	path = "test_data/78/d3/74/78d374355055544920af93639cd38abb4cfd6ea811c0c584ef2d325c7d9cb427"
+	data = open("test_data/echo_data").read()
+	sha = "78d374355055544920af93639cd38abb4cfd6ea811c0c584ef2d325c7d9cb427"
+	path1 = "test_data/8c/cc/7d/8ccc7ddcdce79da7376782b407a0ddbbd8b68881188887a154b515ca49e03ab9"
+	data1 = open("test_data/echo1_data").read()
+	sha1 = "8ccc7ddcdce79da7376782b407a0ddbbd8b68881188887a154b515ca49e03ab9"
+	path2 = "test_data/53/a1/21/53a121ba03d9c55d688217bae9d358af4046f2bacd3fafaafc4cb28daa5f0448"
+	data2 = open("test_data/echo2_data").read()
+	sha2 = "53a121ba03d9c55d688217bae9d358af4046f2bacd3fafaafc4cb28daa5f0448"
+	correct_diff = {50: 3, 989: 2, 1222: 10}
+
+class TestFilesDiff(unittest.TestCase):
+	"""
+	Test file comparison accorging to test requiroments
+	"""
+	def setUp(self):
+		self.td = TestData()
+
+	def testNoDiff(self):
+		"""
+		Test equal files
+		"""
+		diff = getDiff(self.td.path, self.td.path1)
+		self.assertEquals(diff['binary_diff'], 'null')
+
+	def testSizeDiff(self):
+		"""
+		Test equal files
+		"""
+		diff = getDiff(self.td.path, self.td.path)
+		self.assertEquals(diff['binary_diff'], {})
+
+	def testDiff(self):
+		"""
+		Test content diff
+		"""
+		diff = getDiff(self.td.path1, self.td.path2)
+		self.assertEquals(diff['binary_diff'], self.td.correct_diff)
 
 class TestRecord(unittest.TestCase):
 	"""
@@ -200,7 +232,7 @@ class TestEndpoints(unittest.TestCase):
 
 if __name__ == "__main__":
 	suites = list()
-	for test in (TestRecord, TestDB, TestEndpoints):
+	for test in (TestFilesDiff, TestRecord, TestDB, TestEndpoints):
 		suites.append(unittest.TestLoader().loadTestsFromTestCase(test))
 	suite = unittest.TestSuite(suites)
 	results = unittest.TextTestRunner(verbosity = 2).run(suite)

@@ -219,18 +219,18 @@ def getDiff(file1, file2):
 	"""
 	byte_array1 = numpy.fromfile(file1, numpy.int8)
 	byte_array2 = numpy.fromfile(file2, numpy.int8)
-	diff_offsets = numpy.where(byte_array1 == byte_array2)[0]
+	diff_offsets = numpy.where(byte_array1 != byte_array2)[0]
 	if len(diff_offsets) == 0:
 		return {
-			"equal_content": True,
-			"equal_size": True,
-			"binary_diff": ""
+			"equal_content": "true",
+			"equal_size": "true",
+			"binary_diff": {}
 		}
 	if len(byte_array1) != len(byte_array2):
 		return {
-			"equal_content": False,
-			"equal_size": False,
-			"binary_diff": None
+			"equal_content": "false",
+			"equal_size": "false",
+			"binary_diff": "null"
 		}
 	# transform diff offsets to binary_diff
 	# for example, [3, 4, 5, 7, 8] -> {3:3, 7:2}
