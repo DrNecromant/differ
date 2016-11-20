@@ -9,12 +9,19 @@ from flask_api import status
 from consts import *
 from errors import *
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db.create_all()
 
 # Create pool of IDs for testing
 ids = range(1, 100)
+
+# Create testdata
+class TestData(object):
+	path1 = "test_data/66/cb/ca/66cbca2264581ba7223adf85b3840a6ef662968bae56acfc91d31961029e3c04"
+	data1 = open("test_data/Clare.jpg_data").read()
+	sha1 = "66cbca2264581ba7223adf85b3840a6ef662968bae56acfc91d31961029e3c04"
+	path2 = "test_data/a4/aa/17/a4aa17e3ba5d2849461a17559b0bae6f1f00a8ccab1a7f17d7f73225f9086fec"
+	data2 = open("test_data/Clare_modified.jpg_data").read()
+	sha2 = "a4aa17e3ba5d2849461a17559b0bae6f1f00a8ccab1a7f17d7f73225f9086fec"
 
 class TestRecord(unittest.TestCase):
 	"""
@@ -23,42 +30,39 @@ class TestRecord(unittest.TestCase):
 	Record object can accept data or sha
 	"""
 	def setUp(self):
-		self.storage = "test_data"
-		self.path = "test_data/66/cb/ca/66cbca2264581ba7223adf85b3840a6ef662968bae56acfc91d31961029e3c04"
-		self.data = open("test_data/Clare.jpg_data").read()
-		self.sha = "66cbca2264581ba7223adf85b3840a6ef662968bae56acfc91d31961029e3c04"
+		self.td = TestData()
 
 	def testConvertShaToPath(self):
-		r = Record(storage = self.storage, sha = self.sha)
+		r = Record(sha = self.td.sha1)
 		path = r.getPath()
-		self.assertEquals(path, self.path)
+		self.assertEquals(path, self.td.path1)
 
 	def testConvertDataToPath(self):
-		r = Record(storage = self.storage, data = self.data)
+		r = Record(data = self.td.data1)
 		path = r.getPath()
-		self.assertEquals(path, self.path)
+		self.assertEquals(path, self.td.path1)
 
 	def testConvertShaToData(self):
-		r = Record(storage = self.storage, sha = self.sha)
+		r = Record(sha = self.td.sha1)
 		data = r.getData()
-		self.assertEquals(data, self.data)
+		self.assertEquals(data, self.td.data1)
 
 	def testConvertDataToSha(self):
-		r = Record(storage = self.storage, data = self.data)
+		r = Record(data = self.td.data1)
 		sha = r.getSha()
-		self.assertEquals(sha, self.sha)
+		self.assertEquals(sha, self.td.sha1)
 
 	def testSaveDataOnDisk(self):
 		"""
 		Store data to disk
 		Check path and sha
 		"""
-		r = Record(storage = self.storage, data = self.data)
+		r = Record(data = self.td.data1)
 		r.saveOnDisk()
 		sha = r.getSha()
 		path = r.getPath()
-		self.assertEquals(sha, self.sha)
-		self.assertEquals(path, self.path)
+		self.assertEquals(sha, self.td.sha1)
+		self.assertEquals(path, self.td.path1)
 
 class TestDB(unittest.TestCase):
 	"""
@@ -103,6 +107,7 @@ class TestEndpoints(unittest.TestCase):
 	"""
 	def setUp(self):
 		self.client = app.test_client()
+		self.td = TestData()
 
 	def _getUrl(self, side):
 		return "%s/%s/%s" % (BASEURL, self.task, side)
@@ -143,9 +148,9 @@ class TestEndpoints(unittest.TestCase):
 		Returns 201 for data urls
 		"""
 		self.task = ids.pop()
-		res = self.client.put(self.getLeftDataUrl(), data = '{"data": "data1"}')
+		res = self.client.put(self.getLeftDataUrl(), data = '{"data": "%s"}' % self.td.data1)
 		self.assertEquals(res.status_code, status.HTTP_201_CREATED)
-		res = self.client.put(self.getRightDataUrl(), data = '{"data": "data2"}')
+		res = self.client.put(self.getRightDataUrl(), data = '{"data": "%s"}' % self.td.data2)
 		self.assertEquals(res.status_code, status.HTTP_201_CREATED)
 
 	def testAddFakeData(self):
@@ -154,7 +159,7 @@ class TestEndpoints(unittest.TestCase):
 		Returns 404 for fake data url
 		"""
 		self.task = ids.pop()
-		res = self.client.put(self.getFakeDataUrl(), data = '{"data": "data"}')
+		res = self.client.put(self.getFakeDataUrl(), data = '{"data": "%s"}' % self.td.data1)
 		self.assertEquals(res.status_code, status.HTTP_404_NOT_FOUND)
 
 	def testMissedData(self):
@@ -163,7 +168,7 @@ class TestEndpoints(unittest.TestCase):
 		Returns 505 for task url
 		"""
 		self.task = ids.pop()
-		res = self.client.put(self.getRightDataUrl(), data = '{"data": "data"}')
+		res = self.client.put(self.getRightDataUrl(), data = '{"data": "%s"}' % self.td.data2)
 		res = self.client.get(self.getTaskUrl())
 		self.assertEquals(res.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -173,8 +178,8 @@ class TestEndpoints(unittest.TestCase):
 		Returns 200 for task url
 		"""
 		self.task = ids.pop()
-		res = self.client.put(self.getLeftDataUrl(), data = '{"data": "data1"}')
-		res = self.client.put(self.getRightDataUrl(), data = '{"data": "data2"}')
+		res = self.client.put(self.getLeftDataUrl(), data = '{"data": "%s"}' % self.td.data1)
+		res = self.client.put(self.getRightDataUrl(), data = '{"data": "%s"}' % self.td.data2)
 		res = self.client.get(self.getTaskUrl())
 		self.assertEquals(res.status_code, status.HTTP_200_OK)
 		self.assertEquals(eval(res.get_data())["task_id"], self.task)
