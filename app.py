@@ -1,7 +1,12 @@
+import os
+import base64
+import hashlib
+
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_api import status
 from flask_restful import Resource, Api
+
 from consts import *
 from errors import *
 
@@ -15,7 +20,7 @@ class Data(db.Model):
 	id = db.Column(db.Integer, primary_key = True)
 	task_id = db.Column(db.Integer)
 	side = db.Column(db.String(10))
-	sha = db.Column(db.String(100), default = "")
+	sha = db.Column(db.String(64), default = "")
 
 	def __init__(self, task_id, side):
 		self.task_id = task_id
@@ -35,6 +40,71 @@ class Diff(db.Model):
 		self.length = length
 
 db.create_all()
+
+class Record(object):
+	"""
+	Class describes storored objects
+	It has base64 encoded data, sha and fs path params
+	Record is stored as sha in DB and as file on fs
+	"""
+	def __init__(self, storage = STORAGE, data = "", sha = ""):
+		if not data and not sha:
+			raise EmptyRecord("Empty data is not permitted for storing")
+		if not os.path.exists(storage):
+			os.makedirs(storage)
+		self.storage = storage
+		self.data = data
+		self.sha = sha
+		self.path = ""
+
+	def _getPathFromSha(self):
+		"""
+		Store file on fs the way to not damage in case of big amount of files
+		"""
+		x = self.sha
+		return os.path.join(self.storage, x[:2], x[2:4], x[4:6], x)
+
+	def getData(self):
+		"""
+		Returns decoded data
+		"""
+		if self.data:
+			return self.data
+		if not self.path:
+			self.path = self._getPathFromSha()
+			#dirname = os.dirname(self.path)
+			#if not os.path.exists(dirname):
+			#	os.makedirs(dirname)
+		with open(self.path, "rb") as f:
+			self.data = base64.b64encode(f.read())
+		return self.data
+
+	def getPath(self):
+		"""
+		Return filepath for record
+		"""
+		if self.path:
+			return path
+		if self.sha:
+			return self._getPathFromSha()
+		h = hashlib.new("sha256")
+		h.update(base64.b64decode(self.data))
+		self.sha = h.hexdigest()
+		self.path = self._getPathFromSha()
+		return self.path
+
+	def getSha(self):
+		"""
+		Return file sha that is suppored to be stored in DB
+		"""
+		if self.sha:
+			return self.sha
+		if self.path:
+			return "".join(self.path.split(os.path.sep))
+		h = hashlib.new("sha256")
+		h.update(base64.b64decode(self.data))
+		self.sha = h.hexdigest()
+		return self.sha
 
 class Accepter(Resource):
 	"""
