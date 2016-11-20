@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.3.3
+- Add removeFromDisk for Record
+- Add unittests for removeFromDisk
+
 ## v1.3.2
 - Fixed app configuration that allows to run unittests on production
 
