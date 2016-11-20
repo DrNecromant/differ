@@ -191,7 +191,7 @@ class Result(Resource):
 			# Return cached diff from DB
 			binary_diff = {}
 			for db_diff in db_diffs:
-				binary_diff[db_diff.offset] = db_diff.lenght
+				binary_diff[db_diff.offset] = db_diff.length
 			return {
 				"message": "OK",
 				"task_id": task_id,
