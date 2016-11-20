@@ -1,4 +1,17 @@
 LEFT = "left"
 RIGHT = "right"
 BASEURL = "/v1/diff"
-STORAGE = "storage"
+
+class Config(object):
+	TESTING = False
+	DEBUG = False
+	SQLALCHEMY_DATABASE_URI = "sqlite:///production.db"
+	SQLALCHEMY_TRACK_MODIFICATIONS = True
+	RECORD_STORAGE_PATH = "storage"
+
+class TestingConfig(Config):
+	TESTING = True
+	DEBUG = True
+	DATABASE_URI = 'sqlite://:memory:'
+	SQLALCHEMY_TRACK_MODIFICATIONS = True
+	RECORD_STORAGE_PATH = "test_data"
