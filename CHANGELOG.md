@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.1.1
+- Added new class Record that represent convertanble object
+- Added unittests for Record object
+
 ## v1.0.1
 - Join test suites in one big suite
 
