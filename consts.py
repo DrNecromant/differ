@@ -2,7 +2,7 @@ LEFT = "left"
 RIGHT = "right"
 BASEURL = "/v1/diff"
 
-class Config(object):
+class ProductionConfig(object):
 	TESTING = False
 	DEBUG = False
 	SQLALCHEMY_DATABASE_URI = "sqlite:///production.db"
