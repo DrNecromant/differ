@@ -156,7 +156,7 @@ class Accepter(Resource):
 		else:
 			# If data exists then remove old file on disk first
 			old_record = Record(sha = data.sha)
-			old_record.RemoveFromDisk()
+			old_record.removeFromDisk()
 		record = Record(data = json_data["data"])
 		# Store decoded file on a disk
 		record.saveOnDisk()
