@@ -8,7 +8,7 @@ class TestData(object):
 	path2 = "test_data/53/a1/21/53a121ba03d9c55d688217bae9d358af4046f2bacd3fafaafc4cb28daa5f0448"
 	data2 = open("test_data/echo2_data").read()
 	sha2 = "53a121ba03d9c55d688217bae9d358af4046f2bacd3fafaafc4cb28daa5f0448"
-	correct_diff = {50: 3, 989: 2, 1222: 10}
+	correct_diff = {"50": 3, "989": 2, "1222": 10}
 
 # Create pool of IDs for testing
 ids = range(1, 100)

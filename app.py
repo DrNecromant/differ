@@ -254,13 +254,13 @@ def getDiff(file1, file2):
 		}
 	# transform diff offsets to binary_diff
 	# for example, [3, 4, 5, 7, 8] -> {3:3, 7:2}
-	offset = diff_offsets[0]
+	offset = str(diff_offsets[0])
 	binary_diff = {offset: 1}
 	for i in range(1, len(diff_offsets)):
 		if diff_offsets[i - 1] == diff_offsets[i] - 1:
 			binary_diff[offset] += 1
 		else:
-			offset = diff_offsets[i]
+			offset = str(diff_offsets[i])
 			binary_diff[offset] = 1
 	return {
 		"equal_content": "false",
