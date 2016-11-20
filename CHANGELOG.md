@@ -1,5 +1,8 @@
 # Change Log
 
+## v1.4.1
+- Use DB Diff as cache in GET requests
+
 ## v1.4.0
 - GET request now process difference
 - Unittest for getDiff
