@@ -1,5 +1,11 @@
 # Change Log
 
+## v1.3.1
+- Extended PUT request that works with real data now
+- Extended unittest for PUT request
+- Init app configuration right after app creation
+- Added more test data for unitests
+
 ## v1.2.1
 - Added new method saveOnDisk for Record class
 - Added unittests for method saveOnDisk
