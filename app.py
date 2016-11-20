@@ -1,6 +1,7 @@
 import os
 import base64
 import hashlib
+import numpy
 
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
@@ -204,7 +205,7 @@ class Result(Resource):
 		record_left = Record(sha = sha_left)
 		sha_right = query.filter_by(side = RIGHT).one().sha
 		record_right = Record(sha = sha_right)
-		diff = getDiff(record_left.path, record_right.path)
+		diff = getDiff(record_left.getPath(), record_right.getPath())
 		return {
 			"message": "OK",
 			"task_id": task_id,
@@ -212,7 +213,40 @@ class Result(Resource):
 		}, status.HTTP_200_OK
 
 def getDiff(file1, file2):
-	return "OK"
+	"""
+	Main function that compares actual binary files
+	Should return json result according to requirements
+	"""
+	byte_array1 = numpy.fromfile(file1, numpy.int8)
+	byte_array2 = numpy.fromfile(file2, numpy.int8)
+	diff_offsets = numpy.where(byte_array1 == byte_array2)[0]
+	if len(diff_offsets) == 0:
+		return {
+			"equal_content": True,
+			"equal_size": True,
+			"binary_diff": ""
+		}
+	if len(byte_array1) != len(byte_array2):
+		return {
+			"equal_content": False,
+			"equal_size": False,
+			"binary_diff": None
+		}
+	# transform diff offsets to binary_diff
+	# for example, [3, 4, 5, 7, 8] -> {3:3, 7:2}
+	offset = diff_offsets[0]
+	binary_diff = {offset: 1}
+	for i in range(1, len(diff_offsets)):
+		if diff_offsets[i - 1] == diff_offsets[i] - 1:
+			binary_diff[offset] += 1
+		else:
+			offset = diff_offsets[i]
+			binary_diff[offset] = 1
+	return {
+		"equal_content": "false",
+		"equal_size": "true",
+		"binary_diff": binary_diff
+	}
 
 api.add_resource(Result, "%s/<int:task_id>" % BASEURL)
 api.add_resource(Accepter, "%s/<int:task_id>/<any(%s, %s):side>" % (BASEURL, LEFT, RIGHT))
