@@ -58,11 +58,11 @@ class TestRecord(unittest.TestCase):
 		Check path and sha
 		"""
 		r = Record(data = self.td.data1)
+		r.path = "test_data/fake"
+		if os.path.exists(r.path):
+			os.unlink(r.path)
 		r.saveOnDisk()
-		sha = r.getSha()
-		path = r.getPath()
-		self.assertEquals(sha, self.td.sha1)
-		self.assertEquals(path, self.td.path1)
+		self.assertTrue(os.path.exists(r.path))
 
 	def testRemoveFileFromDisk(self):
 		"""
